@@ -1,21 +1,31 @@
 'use strict';
 
-const {
-  eq,
-  ne,
-  gt,
-  gte,
-  lt,
-  lte,
-  like,
-  and,
-  or,
-  count: drizzleCount,
-  asc: drizzleAsc,
-  desc: drizzleDesc,
-  isNull,
-  isNotNull,
-} = require('drizzle-orm');
+let eq, ne, gt, gte, lt, lte, like, and, or, drizzleCount, drizzleAsc, drizzleDesc, isNull, isNotNull;
+
+function loadDrizzle() {
+  if (eq) return;
+  try {
+    const drizzle = require('drizzle-orm');
+    eq = drizzle.eq;
+    ne = drizzle.ne;
+    gt = drizzle.gt;
+    gte = drizzle.gte;
+    lt = drizzle.lt;
+    lte = drizzle.lte;
+    like = drizzle.like;
+    and = drizzle.and;
+    or = drizzle.or;
+    drizzleCount = drizzle.count;
+    drizzleAsc = drizzle.asc;
+    drizzleDesc = drizzle.desc;
+    isNull = drizzle.isNull;
+    isNotNull = drizzle.isNotNull;
+  } catch (e) {
+    throw new Error(
+      'drizzle-orm is required for createDrizzleAdapter. Install it with: npm install drizzle-orm'
+    );
+  }
+}
 
 /**
  * Create an ORM adapter for Drizzle ORM.
@@ -26,6 +36,7 @@ const {
  * @returns {object} Adapter implementing findMany, findOne, count, create, update, delete
  */
 function createDrizzleAdapter(db, table, options = {}) {
+  loadDrizzle();
   const primaryKey = options.primaryKey || 'id';
   const queryName = options.queryName || null;
 

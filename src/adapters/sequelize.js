@@ -1,6 +1,6 @@
 'use strict';
 
-const { Op } = require('sequelize');
+let Op;
 
 /**
  * Create an ORM adapter for Sequelize.
@@ -10,6 +10,16 @@ const { Op } = require('sequelize');
  * @returns {object} Adapter implementing findMany, findOne, count, create, update, delete
  */
 function createSequelizeAdapter(Model, options = {}) {
+  if (!Op) {
+    try {
+      ({ Op } = require('sequelize'));
+    } catch (e) {
+      throw new Error(
+        'sequelize is required for createSequelizeAdapter. Install it with: npm install sequelize'
+      );
+    }
+  }
+
   const primaryKey = options.primaryKey || 'id';
 
   return {
